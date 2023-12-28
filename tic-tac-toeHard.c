@@ -3,15 +3,18 @@
 #include <time.h>
 #include <ctype.h>
 
-void tic_Tac_Toe_easy(void);
-void tic_Tac_Toe_hard(void);
-char writeAgain(char true, char false);
+#define size 3
+
+void printFrame(char frame[size][size]);
+int checkWinner(char frame[size][size], char simbol);
+int checkFrame(char frame[size][size], char simbol);
+void printFrame(char frame[size][size]);
+void randComputer(char frame[size][size], int count);
 
 int main(void)
 {
-    int dList[2] = {0, 2};
-    int l, c, line, column, player = 1, counter;
-    char frame[3][3], stop = 'y';
+    int l, c, line, column, player = rand() % 2, counter;
+    char frame[size][size], stop = 'y';
     srand(time(NULL));
 
     printf("Instructions to play:\n"
@@ -33,206 +36,53 @@ int main(void)
 
         do
         {
-            printf("\n\t 0      1      2\n\n");
-            for(l = 0; l < 3; l++)
-            {   
-                for (c = 0; c < 3; c++)
-                {
-                    if (c == 0)
-                    {
-                        printf("\t");
-                    }
-                    printf("  %c  ", frame[l][c]);
-                    if (c < 2)
-                    {
-                        printf("|");
-                    }
-                    if (c == 2)
-                    {
-                        printf("  %d", l);
-                    }
-                    
-                }
-                if (l < 2)
-                {  
-                    printf("\n\t-----------------");
-                }
-                printf("\n");
-
-            }
-
-            do
-            {
-                if (player == 1)
-                {
-                    printf("\nPLAYER : Type a line and column to put a circle: ");   
-                    scanf("%d%d", &line, &column);
-                }
-
-                else if (frame[1][1] == ' ')
-                {
-                    line = 1;
-                    column = 1;
-                }
-
-                else if (frame[1][1] == 'O' )
-                {
-                    if (counter >= 2)
-                    {
-                        if (frame[0,0] == 'O' && frame[2,2] == ' ')
-                        {
-                            line = 2;
-                            column = 2;
-                        }
-
-                        else if (frame[2,2] == 'O' && frame[0,0] == ' ')
-                        {
-                            line = 2;
-                            column = 2;
-                        }
-
-                        else if (frame[0,2] == 'O' && frame[2,0] == ' ')
-                        {
-                            line = 2;
-                            column = 0;
-                        }
-
-                        else if (frame[2,0] == 'O' && frame[0,2] == ' ')
-                        {
-                            line = 2;
-                            column = 0;
-                        }
-                    }
-                                        
-                    else
-                    {
-                        line = dList[rand() % 2];
-                        column = dList[rand() % 2];
-                    }
-                    
-                }
-
-                else
-                {   
-                    line = rand() % 3;
-                    column = rand() % 3;
-                }
-            
-            }while (line < 0 || line > 2 || column < 0 || column > 2 || frame[line][column] != ' ');
+            printFrame(frame);
 
             if (player == 1)
             {
+                do
+                {
+
+                    printf("\nPLAYER : Type a line and column to put a circle: ");   
+                    scanf("%d%d", &line, &column);
+            
+                }while (line < 0 || line > 2 || column < 0 || column > 2 || frame[line][column] != ' ');
+
                 frame[line][column] = 'O';
                 player ++;
             }
 
             else
             {
-                printf("\nThe PC choosed >> line: %d | column: %d\n", line, column);
-                frame[line][column] = 'X';
-                player = 1;    
-            }
-        
-            if ((frame[0][0] == 'O' && frame[0][1] == 'O' && frame[0][2] == 'O') || (frame[1][0] == 'O' && frame[1][1] == 'O' && frame[1][2] == 'O') || (frame[2][0] == 'O' && frame[2][1] == 'O' && frame[2][2] == 'O') || (frame[0][0] == 'O' && frame[1][1] == 'O' && frame[2][2] == 'O') || (frame[0][2] == 'O' && frame[1][1] == 'O' && frame[2][0]=='O') || (frame[0][0] == 'O' && frame[1][0] == 'O' && frame[2][0]=='O')|| (frame[0][1] == 'O' && frame[1][1] == 'O' && frame[2][1] == 'O') || (frame[0][2] == 'O' && frame[1][2] == 'O' && frame[2][2] == 'O'))
-            {
-                
-                printf("\nThe player wins!");
-                printf("\n\t 0      1      2\n\n");
-                for(l = 0; l < 3; l++)
-                {   
-                    for (c = 0; c < 3; c++)
-                    {
-                        if (c == 0)
-                        {
-                            printf("\t");
-                        }
-                        
-                        printf("  %c  ", frame[l][c]);
-                        if (c < 2)
-                        {
-                            printf("|");
-                        }
-                        if (c == 2)
-                        {
-                            printf("  %d", l);
-                        }
-                        
-                    }
-                    if (l < 2)
-                    {  
-                        printf("\n\t-----------------");
-                    }
-                    printf("\n");
-                }
-                counter = 10;
+                if (checkFrame(frame, 'X') != 1)
+                    checkFrame(frame, 'X');
+                else if (checkFrame(frame, 'O') != 1)
+                    checkFrame(frame, 'O');
+                else
+                    randComputer(frame, counter);
+                player = 1;             
             }
 
-            if ((frame[0][0] == 'X' && frame[0][1] == 'X' && frame[0][2] == 'X') || (frame[1][0] == 'X' && frame[1][1] == 'X' && frame[1][2] == 'X') || (frame[2][0] == 'X' && frame[2][1] == 'X' && frame[2][2] == 'X') || (frame[0][0] == 'X' && frame[1][1] == 'X' && frame[2][2] == 'X') || (frame[0][2] == 'X' && frame[1][1] == 'X' && frame[2][0] == 'X') || (frame[0][0] == 'X' && frame[1][0] == 'X' && frame[2][0] == 'X') || (frame[0][1] == 'X' && frame[1][1] == 'X' && frame[2][1] == 'X') || (frame[0][2] == 'X' && frame[1][2] == 'X' && frame[2][2] == 'X'))
+            if (checkWinner(frame,'O') == 1)
             {
-                printf("\nThe PC wins!");
-                printf("\n\t 0      1      2\n\n");
-                for(l = 0; l < 3; l++)
-                {   
-                    for (c = 0; c < 3; c++)
-                    {
-                        if (c == 0)
-                        {
-                            printf("\t");
-                        }
-                        
-                        printf("  %c  ", frame[l][c]);
-                        if (c < 2)
-                        {
-                            printf("|");
-                        }
-                        if (c == 2)
-                        {
-                            printf("  %d", l);
-                        }
-                        
-                    }
-                    if (l < 2)
-                    {  
-                        printf("\n\t-----------------");
-                    }
-                    printf("\n");
-                }
+                printf("\n\n           The player wins!");
+                printFrame(frame);
+                counter = 10;    
+            }
+            if (checkWinner(frame,'X') == 1)
+            { 
+                printf("\n\n           The PC wins!");
+                printFrame(frame);
                 counter = 10;
             }
-
             counter ++;
 
         }while(counter < 9 || counter == 10 );
         
         if (counter == 9)
         {
-            printf("\nDRAW\n");
-            for(l = 0; l < 3; l++)
-            {   
-                for (c = 0; c < 3; c++)
-                {
-                    if (c == 0)
-                    {
-                        printf("\t");
-                    }
-                    
-                    printf("  %c  ", frame[l][c]);
-                    if (c < 2)
-                    {
-                        printf("|");
-                    }
-                    if (c == 2)
-                    {
-                        printf("  %d", l);
-                    }
-                    
-                }
-                if (l < 2)
-                {  
-                    printf("\n\t-----------------");
-                }
-                printf("\n");
-            }
+            printf("\n          DRAW\n");
+            printFrame(frame);
         }
 
         do
@@ -245,9 +95,202 @@ int main(void)
 
     }while (stop == 'y');
 
-    printf("THANKS FOR PLAYING");
+    printf("\n        THANKS FOR PLAYING");
 
     return EXIT_SUCCESS;
+}
+
+
+void printFrame(char frame[size][size])
+{
+    int c, l;
+
+    printf("\n\t 0      1      2\n\n");
+    for(l = 0; l < 3; l++)
+    {   
+        for (c = 0; c < 3; c++)
+        {
+            if (c == 0)
+            {
+                printf("     %d", l);
+            }
+            if (c == 0)
+            {
+                printf("\t");
+            }
+            printf("  %c  ", frame[l][c]);
+            if (c < 2)
+            {
+                printf("|");
+            }
+            
+        }
+        if (l < 2)
+        {  
+            printf("\n\t-----------------");
+        }
+        printf("\n");
+
+    }
+}
+
+void randComputer(char frame[size][size], int count)
+{
+    int c, l, choose = rand() % 2, choose2 = rand() % 4;
+
+    if (count == 0)
+    {
+        if (choose == 0)
+        {
+            frame[1][1] = 'X';
+        }
+        else
+        {
+            if (choose2 == 0)
+                frame[0][0] = 'X';
+            if (choose2 == 1)
+                frame[0][2] = 'X';
+            if (choose2 == 2)
+                frame[2][0] = 'X';
+            if (choose2 == 3)
+                frame[2][2] = 'X';
+        } 
+    }
+
+    if (count == 1)
+    {
+        if (frame[1][1] == 'O')
+        {
+            if (choose2 == 0)
+                frame[0][0] = 'X';
+            if (choose2 == 1)
+                frame[0][2] = 'X';
+            if (choose2 == 2)
+                frame[2][0] = 'X';
+            if (choose2 == 3)
+                frame[2][2] = 'X';
+        }
+        else
+        {
+            frame[1][1] = 'X';
+        }
+            
+    }
+    
+    if (count > 1)
+    {
+        do
+        {
+            c = rand() % 3;
+            l = rand() % 3;
+
+        } while (frame[c][l] != ' ');
+        frame[c][l] = 'X';
+    }
+}
+
+
+int checkFrame(char frame[size][size], char simbol)
+{   
+    int stop = 0;
+
+    for (int i = 0; i < 3; i++)
+    {
+        
+        if (frame[i][0] == ' ' && frame[i][1] == simbol && frame[i][2] == simbol) //HORIZONTAL 1
+        {
+            frame[i][0] = 'X';
+            break;
+        }
+        else if (frame[0][i] == ' ' && frame[1][i] == simbol && frame[2][i] == simbol) // VERTICAL 1
+        {
+            frame[0][i] = 'X';
+            break;
+        }
+        
+
+        else if (frame[i][0] == simbol && frame[i][1] == ' ' && frame[i][2] == simbol)//HORIZONTAL 2
+        {
+            frame[i][1] = 'X';
+            break;   
+        }
+        else if (frame[0][i] == simbol && frame[1][i] == ' ' && frame[2][i] == simbol)// VERTICAL 2
+        {
+            frame[1][i] = 'X';
+            break;
+        }
+
+
+        else if (frame[i][0] == simbol && frame[i][1] == simbol && frame[i][2] == ' ')//HORIZONTAL 3
+        {
+            frame[i][2] = 'X';
+            break;
+        }
+        else if (frame[0][i] == simbol && frame[1][i] == simbol && frame[2][i] == ' ')// VERTICAL 3
+        {
+            frame[2][i] = 'X';
+            break;
+        }
+        
+
+        else if (frame[0][0] == ' ' && frame[1][1] == simbol && frame[2][2] == simbol) //DIAGONAL 1 - 1
+        {
+            frame[0][0] = 'X';
+            break;
+        }
+        else if (frame[2][0] == ' ' && frame[1][1] == simbol && frame[0][2] == simbol) //DIAGONAL 2 - 1
+        {
+            frame[2][0] = 'X';
+            break;
+        }
+
+
+        else if (frame[0][0] == simbol && frame[1][1] == ' ' && frame[2][2] == simbol) //DIAGONAL 1 - 2
+        {
+            frame[1][1] = 'X';
+            break;
+        }
+        else if (frame[2][0] == simbol && frame[1][1] == ' ' && frame[0][2] == simbol) //DIAGONAL 2 - 2
+        {
+            frame[1][1] = 'X';
+            break;
+        }
+
+
+        else if (frame[0][0] == simbol && frame[1][1] == simbol && frame[2][2] == ' ') //DIAGONAL 1 - 3
+        {
+            frame[2][2] = 'X';
+            break;
+        }
+        else if (frame[2][0] == simbol && frame[1][1] == simbol && frame[0][2] == ' ') //DIAGONAL 2 - 3
+        {
+            frame[0][2] = 'X';
+            break;
+        }
+        stop ++;   
+    }
+
+    if (stop > 2)
+    {
+        return 1;
+    }
+}
+
+
+
+int checkWinner(char frame[size][size], char simbol)
+{
+    if((frame[0][0] == simbol && frame[0][1] == simbol && frame[0][2] == simbol) ||
+    (frame[1][0] == simbol && frame[1][1] == simbol && frame[1][2] == simbol) ||
+    (frame[2][0] == simbol && frame[2][1] == simbol && frame[2][2] == simbol) ||
+    (frame[0][0] == simbol && frame[1][1] == simbol && frame[2][2] == simbol) ||
+    (frame[0][2] == simbol && frame[1][1] == simbol && frame[2][0] == simbol) ||
+    (frame[0][0] == simbol && frame[1][0] == simbol && frame[2][0] == simbol) ||
+    (frame[0][1] == simbol && frame[1][1] == simbol && frame[2][1] == simbol) ||
+    (frame[0][2] == simbol && frame[1][2] == simbol && frame[2][2] == simbol))
+    {
+        return 1;
+    }
 }
 
 
