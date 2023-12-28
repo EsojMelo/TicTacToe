@@ -7,6 +7,7 @@
 
 void printFrame(char frame[size][size]);
 int checkWinner(char frame[size][size], char simbol);
+int checkFrame(char frame[size][size], char simbol);
 
 int main(void)
 {
@@ -35,50 +36,40 @@ int main(void)
         {
             printFrame(frame);
 
-            do
-            {
-                if (player == 1)
-                {
-                    printf("\nPLAYER : Type a line and column to put a circle: ");   
-                    scanf("%d%d", &line, &column);
-                }
-
-                else if (frame[1][1] == ' ')
-                {
-                    line = 1;
-                    column = 1;
-                }
-            
-                else
-                {   
-                    line = rand() % 3;
-                    column = rand() % 3;
-                }
-            
-            }while (line < 0 || line > 2 || column < 0 || column > 2 || frame[line][column] != ' ');
-
             if (player == 1)
             {
+                do
+                {
+
+                    printf("\nPLAYER : Type a line and column to put a circle: ");   
+                    scanf("%d%d", &line, &column);
+            
+                }while (line < 0 || line > 2 || column < 0 || column > 2 || frame[line][column] != ' ');
+
                 frame[line][column] = 'O';
                 player ++;
             }
 
             else
             {
-                printf("\nThe PC choosed >> line: %d | column: %d\n", line, column);
-                frame[line][column] = 'X';
-                player = 1;    
+                if (checkFrame(frame, 'X') != 1)
+                    checkFrame(frame, 'X');
+                else if (checkFrame(frame, 'O') != 1)
+                    checkFrame(frame, 'O');
+                else
+                    randComputer(frame);
+                player = 1;             
             }
 
             if (checkWinner(frame,'O') == 1)
             {
-                printf("        The player wins!", player);
+                printf("\n\n           The player wins!");
                 printFrame(frame);
                 counter = 10;    
             }
             if (checkWinner(frame,'X') == 1)
             { 
-                printf("        The PC wins!", player);
+                printf("\n\n           The PC wins!");
                 printFrame(frame);
                 counter = 10;
             }
@@ -88,7 +79,7 @@ int main(void)
         
         if (counter == 9)
         {
-            printf("\nDRAW\n");
+            printf("\n          DRAW\n");
             printFrame(frame);
         }
 
@@ -102,7 +93,7 @@ int main(void)
 
     }while (stop == 'y');
 
-    printf("THANKS FOR PLAYING");
+    printf("\n        THANKS FOR PLAYING");
 
     return EXIT_SUCCESS;
 }
@@ -140,6 +131,107 @@ void printFrame(char frame[size][size])
 
     }
 }
+
+void randComputer(char frame[size][size])
+{
+    int c, l;
+    do
+    {
+        c = rand() % 3;
+        l = rand() % 3;
+
+    } while (frame[c][l] != ' ');
+    frame[c][l] = 'X';
+}
+
+
+int checkFrame(char frame[size][size], char simbol)
+{   
+    int stop = 0;
+    int c = 0, l = 0;
+
+    for (int i = 0; i < 3; i++)
+    {
+        
+        if (frame[i][0] == ' ' && frame[i][1] == simbol && frame[i][2] == simbol) //HORIZONTAL 1
+        {
+            frame[i][0] = 'X';
+            break;
+        }
+        if (frame[0][i] == ' ' && frame[1][i] == simbol && frame[2][i] == simbol) // VERTICAL 1
+        {
+            frame[0][i] = 'X';
+            break;
+        }
+        
+
+        if (frame[i][0] == simbol && frame[i][1] == ' ' && frame[i][2] == simbol)//HORIZONTAL 2
+        {
+            frame[i][1] = 'X';
+            break;   
+        }
+        if (frame[0][i] == simbol && frame[1][i] == ' ' && frame[2][i] == simbol)// VERTICAL 2
+        {
+            frame[1][i] = 'X';
+            break;
+        }
+
+
+        if (frame[i][0] == simbol && frame[i][1] == simbol && frame[i][2] == ' ')//HORIZONTAL 3
+        {
+            frame[i][2] = 'X';
+            break;
+        }
+        if (frame[0][i] == simbol && frame[1][i] == simbol && frame[2][i] == ' ')// VERTICAL 3
+        {
+            frame[2][i] = 'X';
+            break;
+        }
+        
+
+        if (frame[0][0] == ' ' && frame[1][1] == simbol && frame[2][2] == simbol) //DIAGONAL 1 - 1
+        {
+            frame[0][0] = 'X';
+            break;
+        }
+        if (frame[2][0] == ' ' && frame[1][1] == simbol && frame[0][2] == simbol) //DIAGONAL 2 - 1
+        {
+            frame[2][0] = 'X';
+            break;
+        }
+
+
+        if (frame[0][0] == simbol && frame[1][1] == ' ' && frame[2][2] == simbol) //DIAGONAL 1 - 2
+        {
+            frame[1][1] = 'X';
+            break;
+        }
+        if (frame[2][0] == simbol && frame[1][1] == ' ' && frame[0][2] == simbol) //DIAGONAL 2 - 2
+        {
+            frame[1][1] = 'X';
+            break;
+        }
+
+
+        if (frame[0][0] == simbol && frame[1][1] == simbol && frame[2][2] == ' ') //DIAGONAL 1 - 3
+        {
+            frame[2][2] = 'X';
+            break;
+        }
+        if (frame[2][0] == simbol && frame[1][1] == simbol && frame[0][2] == ' ') //DIAGONAL 2 - 3
+        {
+            frame[0][2] = 'X';
+            break;
+        }
+        stop ++;   
+    }
+
+    if (stop > 2)
+    {
+        return 1;
+    }
+}
+
 
 
 int checkWinner(char frame[size][size], char simbol)
